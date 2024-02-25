@@ -1,5 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -12,7 +13,7 @@ public class Client {
     /**
      * Port d'écoute du serveur
      */
-    private static final int PORT = 9876;
+    private static final int PORT = 110;
 
     /**
      * uri du serveur
@@ -27,14 +28,21 @@ public class Client {
             var out = new BufferedOutputStream(serveur.getOutputStream());
 
             while (!serveur.isClosed()) {
-                byte[] buffer = new byte[1024];
-                int bytesRead = in.read(buffer);
-                String message = new String(buffer, 0, bytesRead);
+
+                ByteArrayOutputStream resultBuff = new ByteArrayOutputStream();
+                byte[] buff = new byte[1024];
+                do {
+                    int l = in.read(buff, 0, buff.length);
+                    resultBuff.write(buff, 0, l);
+                } while (in.available() > 0);
+
+                String message = resultBuff.toString();
+
                 System.out.println("Message reçu : " + message);
 
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Entrez un texte : ");
-                String texte = scanner.nextLine();
+                String texte = scanner.nextLine()+"\n";
                 System.out.println("Texte saisi : " + texte);
                 out.write(texte.getBytes(), 0, texte.length());
                 out.flush();

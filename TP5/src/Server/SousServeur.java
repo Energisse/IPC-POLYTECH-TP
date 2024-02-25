@@ -4,7 +4,6 @@ import Command.*;
 import Command.List;
 import Command.User;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -22,7 +21,7 @@ public class SousServeur implements Runnable {
     /**
      * Input stream
      */
-    private BufferedInputStream in = null;
+    private Scanner in = null;
 
     /**
      * Output stream
@@ -49,7 +48,7 @@ public class SousServeur implements Runnable {
     public SousServeur(Socket client) throws IOException {
         this.client = client;
         client.setSoTimeout(timeout);
-        in = new BufferedInputStream(client.getInputStream());
+        in = new Scanner(client.getInputStream());
         out = new BufferedOutputStream(client.getOutputStream());
 
         Commande cmd;
@@ -93,6 +92,7 @@ public class SousServeur implements Runnable {
 
     /**
      * Envoi d'un message multiligne
+     *
      * @param messages les messages à envoyer
      * @throws IOException si une erreur survient lors de l'envoi
      */
@@ -101,7 +101,7 @@ public class SousServeur implements Runnable {
         for (String s : messages) {
             message.append(s).append("\r\n");
         }
-        message.append(".");
+        message.append(".\r\n");
         out.write(message.toString().getBytes(), 0, message.length());
         out.flush();
     }
@@ -113,22 +113,20 @@ public class SousServeur implements Runnable {
 
             send("+OK POP3 server ready");
 
-            while (!client.isClosed()) {
-                byte[] buffer = new byte[1024];
-                int bytesRead = in.read(buffer);
-                String message = new String(buffer, 0, bytesRead);
+            while (client.isConnected() && in.hasNextLine()) {
+                String message = in.nextLine();
+
                 var splited = message.split(" ", 2);
                 String arg = "";
-                if(splited.length > 1) {
+                if (splited.length > 1) {
                     arg = splited[1];
                 }
-                if(!commandes.containsKey(splited[0])){
+                if (!commandes.containsKey(splited[0])) {
                     send("-ERR Unknown command");
                     continue;
                 }
                 commandes.get(splited[0]).run(arg, this);
             }
-
 
         } catch (SocketException e) {
             System.out.println("Connexion fermée" + e.getMessage());
@@ -136,9 +134,8 @@ public class SousServeur implements Runnable {
             System.out.println("Erreur lors de la communication : " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Erreur : " + e.getMessage());
-        }
-        finally {
-            if(!user.isEmpty()) UserManager.getUser(user).setLogged(false);
+        } finally {
+            if (!user.isEmpty()) UserManager.getUser(user).setLogged(false);
 
             try {
                 in.close();
@@ -151,7 +148,7 @@ public class SousServeur implements Runnable {
     }
 
     public State getState() {
-       return this.state;
+        return this.state;
     }
 
     public void setUser(String user) {
@@ -172,7 +169,7 @@ public class SousServeur implements Runnable {
         client.close();
     }
 
-    public MailManager getMailManager(){
+    public MailManager getMailManager() {
         return this.mailManager;
     }
 }

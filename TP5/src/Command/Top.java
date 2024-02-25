@@ -6,8 +6,6 @@ import Server.State;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * The Top command
@@ -37,8 +35,16 @@ public class Top extends Commande {
 
         try {
             String[] splited = arg.split(" ",2);
-            index = Integer.parseInt(splited[0]);
+            if(splited.length < 2){
+                ss.send("-ERR missing msg or line number");
+                return;
+            }
+            index = Integer.parseInt(splited[0])-1;
             lines = Integer.parseInt(splited[1]);
+            if(lines < 0){
+                ss.send("-ERR line number cannot be negative");
+                return;
+            }
         } catch (NumberFormatException e) {
             ss.send("-ERR no such message");
             return;
@@ -56,13 +62,15 @@ public class Top extends Commande {
             return;
         }
 
-
         String message = Files.readString(mails.file().toPath());
         String[] split = message.split("\n|\r\n", lines+1); // Split by line
-        message = Arrays.stream(split)
-                .limit(split.length -1 ) // Remove remaining lines
-                .collect(Collectors.joining("\r\n"));
 
-        ss.send("+OK " + message.getBytes().length + " octets\n" + message);
+        lines = Math.min(split.length,lines);
+
+        String[] messages = new String[lines+1];
+        System.arraycopy(split, 0, messages, 1, lines);
+
+        messages[0] = "+OK " + message.getBytes().length + " octets";
+        ss.send(messages);
     }
 }

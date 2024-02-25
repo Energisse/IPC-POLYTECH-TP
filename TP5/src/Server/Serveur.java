@@ -1,8 +1,5 @@
 package Server;
 
-import Server.SousServeur;
-
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,7 +9,7 @@ public class Serveur {
     /**
      * Port d'écoute du serveur
      */
-    private static final int PORT = 9876;
+    private static final int PORT = 110;
 
     /**
      * Maximum de clients connectés
@@ -34,7 +31,7 @@ public class Serveur {
         }catch (IllegalArgumentException e) {
             System.out.println("Erreur lors de la création de la pool");
         }
-        catch (IOException  e) {
+        catch (Exception  e) {
             System.out.println("Erreur lors de la création du socket : " + e.getMessage());
         }
 

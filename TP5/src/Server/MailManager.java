@@ -1,7 +1,5 @@
 package Server;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +47,7 @@ public class MailManager {
      * @param index the index of the mail
      * @return the mail
      */
-    public @Nullable Mail getMail(int index) {
+    public Mail getMail(int index) {
         File[] files = this.getMailsFiles();
 
         if ( index < 0 || index >= files.length) {
@@ -57,13 +55,7 @@ public class MailManager {
         }
 
         Arrays.sort(files, Comparator.comparingLong(File::lastModified));
-        for (int i = 0; i < files.length; i++) {
-            if (i == index) {
-                return new Mail(i, files[i]);
-            }
-        }
-
-        return null;
+        return new Mail(index, files[index]);
     }
 
     /**

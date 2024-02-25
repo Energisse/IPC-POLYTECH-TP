@@ -27,7 +27,7 @@ public class Dele extends Commande{
             return;
         }
 
-        if(ss.getMailManager().getMail(index) == null) {
+        if(ss.getMailManager().getMail(index-1) == null) {
             ss.send("-ERR no such message");
             return;
         }
