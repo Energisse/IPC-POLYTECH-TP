@@ -39,7 +39,7 @@ public class Top extends Commande {
                 ss.send("-ERR missing msg or line number");
                 return;
             }
-            index = Integer.parseInt(splited[0])-1;
+            index = Integer.parseInt(splited[0]);
             lines = Integer.parseInt(splited[1]);
             if(lines < 0){
                 ss.send("-ERR line number cannot be negative");
@@ -50,7 +50,7 @@ public class Top extends Commande {
             return;
         }
 
-        Mail mails =  ss.getMailManager().getMail(index);
+        Mail mails =  ss.getMailManager().getMail(index-1);
 
         if (mails == null) {
             ss.send("-ERR no such message");

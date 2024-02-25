@@ -44,7 +44,7 @@ public class Retr extends Commande {
             return;
         }
 
-        Mail mail = ss.getMailManager().getMail(index);
+        Mail mail = ss.getMailManager().getMail(index-1);
 
         if(mail == null) {
             ss.send("-ERR no such message");
