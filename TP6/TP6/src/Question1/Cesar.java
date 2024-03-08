@@ -1,3 +1,5 @@
+package Question1;
+
 import java.util.Locale;
 
 public class Cesar {
@@ -12,7 +14,7 @@ public class Cesar {
     }
 
     public String chiffrer(String text){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         text = text.toUpperCase(Locale.ROOT);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
@@ -21,9 +23,9 @@ public class Cesar {
                 if(c > 'Z')
                     c -= 26;
             }
-            result += c;
+            result.append(c);
         }
-        return result;
+        return result.toString();
     }
 
     public String dechiffrer(String text){
